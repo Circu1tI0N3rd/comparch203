@@ -1,0 +1,3 @@
+02-verilator/HW/*.fst
+02-verilator/HW/*.gtkw
+02-verilator/HW/obj_dir/*
