@@ -18,7 +18,6 @@ uint8_t stable    = 0;
 uint8_t stable_q  = 0;
 
 void dut_clock(Voneshot *dut, VerilatedFstC *vtrace);
-void set_reset(Voneshot *dut);
 void set_random(Voneshot *dut);
 void get_expected(Voneshot *dut);
 void monitor_proc(Voneshot *dut);
@@ -49,30 +48,18 @@ void dut_clock(Voneshot *dut, VerilatedFstC *vtrace) {
   }
 }
 
-void set_reset(Voneshot *dut) {
-  if ((sim_unit < 5) || (sim_unit > 10))
-    dut->rstn_i = 1;
-  else
-    dut->rstn_i = 0;
-}
-
 void set_random(Voneshot *dut) {
   dut->btn_i = rand()%2;
   dut->eval();
 }
 
 void get_expected(Voneshot *dut) {
-  if (dut->rstn_i)
-    if (dut->btn_i)
-      if (btn_state)
-        stable = 0;
-      else {
-        btn_state = 1;
-        stable = 1;
-      }
-    else {
-      btn_state = 0;
+  if (dut->btn_i)
+    if (btn_state)
       stable = 0;
+    else {
+      btn_state = 1;
+      stable = 1;
     }
   else {
     btn_state = 0;
@@ -82,10 +69,7 @@ void get_expected(Voneshot *dut) {
 
 void monitor_proc(Voneshot *dut) {
   // One FSM DFF
-  if (dut->rstn_i)
-    stable_q = stable;
-  else
-    stable_q = 0;
+  stable_q = stable;
 }
 
 void monitor_outputs(Voneshot *dut) {
@@ -124,7 +108,6 @@ int main(int argc, char **argv, char **env) {
     set_random(dut);
     monitor_proc(dut);
     get_expected(dut);
-    set_reset(dut);
     sim_unit++;
 	}
 
